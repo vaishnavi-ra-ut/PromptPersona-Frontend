@@ -1,43 +1,22 @@
-import { useEffect, useState } from "react";
-import API from "../utils/axios";
+import { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-
+import { useSelector, useDispatch } from "react-redux";
+import { setCredentials } from "../utils/authSlice";
 
 const EditProfile = () => {
-
   const user = useSelector((state) => state.auth.user);
-  const [form, setForm] = useState({
-  name: user?.name || "",
-  age: user?.age || "",
-  gender: user?.gender || "",
-  imageUrl: ""
-});
-
-  const [imageFile, setImageFile] = useState(null);
-  const [preview, setPreview] = useState("");
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  useEffect(() => {
-  if (!user) {
-    const fetchUser = async () => {
-      try {
-        const { data } = await API.get("/profile/");
-        setForm({
-          name: data.name || "",
-          age: data.age || "",
-          gender: data.gender || "",
-          imageUrl: data.profileImage || ""
-        });
-        setPreview(data.profileImage || "");
-      } catch (err) {
-        console.error("Failed to load profile", err);
-      }
-    };
-    fetchUser();
-  }
-}, [user]);
+  const [form, setForm] = useState({
+    name: user?.name || "",
+    age: user?.age || "",
+    gender: user?.gender || ""
+  });
 
+  const [toast, setToast] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm((prev) => ({
@@ -46,131 +25,86 @@ const EditProfile = () => {
     }));
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setImageFile(file);
-    setPreview(URL.createObjectURL(file));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const saveProfile = async () => {
     try {
-      const formData = new FormData();
-
-      formData.append("name", form.name);
-      formData.append("age", form.age);
-      formData.append("gender", form.gender);
-      if (imageFile) {
-        formData.append("profileImage", imageFile);
-      } else if (form.imageUrl) {
-        formData.append("imageUrl", form.imageUrl);
-      }
-
-      await API.put("/edit", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
+      const res = await axios.put("http://localhost:5000/api/profile/edit", form, {
+        withCredentials: true
       });
 
-      navigate("/");
+      dispatch(setCredentials({ user: res.data, token: localStorage.getItem("token") }));
+       setToast(true);
+    setTimeout(() => {
+      setToast(false);
+      navigate("/"); 
+    }, 3000);
+
+
     } catch (err) {
-      console.error("Update failed", err);
+      setError(err?.response?.data?.error || err.message || "Failed to update");
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    saveProfile();
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-base-100 px-4 py-8">
-      <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl justify-center">
-        {/* EDIT FORM */}
-        <div className="card w-full md:w-1/2 bg-base-200 shadow-md p-6">
-          <h2 className="text-xl font-bold text-center mb-4">Edit Your Profile</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              type="text"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              placeholder="Your Name"
-              className="input input-bordered w-full"
-              required
-            />
-
-            <input
-              type="number"
-              name="age"
-              value={form.age}
-              onChange={handleChange}
-              placeholder="Age"
-              className="input input-bordered w-full"
-              required
-            />
-
-            <select
-              name="gender"
-              value={form.gender}
-              onChange={handleChange}
-              className="select select-bordered w-full"
-            >
-              <option value="">Gender</option>
-              <option value="female">Female</option>
-              <option value="male">Male</option>
-              <option value="other">Other</option>
-            </select>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium block">Upload Profile Picture</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="file-input file-input-bordered w-full"
-              />
-
-              <p className="text-center text-sm mt-2">or paste image URL</p>
-              <input
-                type="text"
-                name="imageUrl"
-                value={form.imageUrl}
-                onChange={(e) => {
-                  handleChange(e);
-                  setPreview(e.target.value);
-                }}
-                placeholder="https://example.com/image.jpg"
-                className="input input-bordered w-full"
-              />
-            </div>
-
-            <div className="flex justify-between gap-4">
-              <button type="button" className="btn btn-outline w-1/2" onClick={() => navigate("/")}>
-                Do It Later
-              </button>
-              <button type="submit" className="btn bg-[#057dcd] w-1/2">
-                Save
-              </button>
-            </div>
-          </form>
+    <div className="mt-8 flex items-center justify-center bg-base-100 px-4 py-8">
+      {toast && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-2 rounded shadow-md z-50 animate-slide-in">
+          Profile updated successfully!
         </div>
+      )}
 
-        {/* LIVE PREVIEW */}
-        <div className="card w-full md:w-1/4 bg-base-200 shadow-md p-6 flex flex-col items-center text-center">
-          <h2 className="text-xl font-bold mb-8">Your Profile</h2>
+      {error && (
+        <div className="text-red-500 text-sm text-center  mb-2">{error}</div>
+      )}
 
-          <div className="avatar mb-5">
-            <div className="w-48 rounded-full ring ring-[#057dcd] ring-offset-base-100 ring-offset-2">
-              {preview ? (
-                <img src={preview} alt="Profile Preview" />
-              ) : (
-                <div className="bg-gray-300 w-full h-full flex items-center justify-center text-gray-500">
-                  ?
-                </div>
-              )}
-            </div>
+      <div className="card w-full max-w-xl bg-base-200 shadow-md p-6">
+        <h2 className="text-xl font-bold text-center mb-6">Edit Your Profile</h2>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <input
+            type="text"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="Your Name"
+            className="input input-bordered w-full"
+            required
+          />
+
+          <input
+            type="number"
+            name="age"
+            value={form.age}
+            onChange={handleChange}
+            placeholder="Age"
+            className="input input-bordered w-full"
+            required
+          />
+
+          <select
+            name="gender"
+            value={form.gender}
+            onChange={handleChange}
+            className="select select-bordered w-full"
+          >
+            <option value="">Gender</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="other">Other</option>
+          </select>
+
+          <div className="flex justify-between gap-4 mr-4">
+            <button type="button" className="btn btn-outline w-1/2" onClick={() => navigate("/")}>
+              Do It Later
+            </button>
+            <button type="submit" className="btn bg-[#057dcd] w-1/2">
+              Save
+            </button>
           </div>
-
-          <p className="text-lg font-semibold">{form.name || "Your Name"}</p>
-          <p className="text-sm text-base-content/70">
-            {form.age ? `${form.age} years old` : "Age not set"}
-          </p>
-          <p className="text-sm text-base-content/70 capitalize">{form.gender || "Gender not selected"}</p>
-        </div>
+        </form>
       </div>
     </div>
   );

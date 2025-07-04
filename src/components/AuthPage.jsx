@@ -139,7 +139,7 @@ const AuthPage = () => {
           )}
 
           <div className="text-center mt-4">
-            <p className="text-sm">
+            <p className="text-md">
               {isSignup ? "Already have an account?" : "New user?"}{" "}
               <button
                 onClick={() => setIsSignup(!isSignup)}
@@ -149,6 +149,16 @@ const AuthPage = () => {
               </button>
             </p>
           </div>
+          <div className="text-center ">
+  <p className="text-sm text-gray-600">or</p>
+  <button
+    type="button"
+    className="w-28 mt-2 text-gray-600 text-sm hover:underline"
+    onClick={() => navigate("/")}
+  >
+    Skip for now →
+  </button>
+</div>
         </div>
       </div>
     </div>
