@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import API from "../utils/axios";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../utils/authSlice";
 
 const AuthPage = () => {
   const [isSignup, setIsSignup] = useState(false);
@@ -9,20 +13,49 @@ const AuthPage = () => {
     age: "",
     gender: "",
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(isSignup ? "Signup Data:" : "Login Data:", form);
-    // Call login/signup API based on `isSignup`
+    setError("");
+    setLoading(true);
+
+    try {
+      const url = isSignup ? "/auth/signup" : "/auth/login";
+
+      const cleanedForm = {
+        ...form,
+        name: form.name.trim(),
+        email: form.email.trim(),
+        gender: form.gender.trim().toLowerCase(),
+      };
+
+      const { data } = await API.post(url, cleanedForm);
+
+      localStorage.setItem("token", data.token);
+      dispatch(setCredentials({ user: data.user, token: data.token }));
+
+      if (isSignup) navigate("/edit");
+      else navigate("/");
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.error || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-base-100 ">
-      <div className="card w-full max-w-md shadow-xl bg-base-300 border-1 border-gray-400 -mt-[7rem]">
+    <div className="min-h-screen flex items-center justify-center bg-base-100">
+      <div className="card w-full max-w-md shadow-lg bg-base-200 -mt-20">
         <div className="card-body">
           <h2 className="text-2xl font-bold text-center text-[#057dcd]">
             {isSignup ? "Create Account" : "Welcome Back"}
@@ -86,17 +119,31 @@ const AuthPage = () => {
               required
             />
 
-            <button type="submit" className="btn bg-[#057dcd] w-full ">
-              {isSignup ? "Sign Up" : "Login"}
+            <button
+              type="submit"
+              className="btn bg-[#057dcd] w-full"
+              disabled={loading}
+            >
+              {loading
+                ? "Please wait..."
+                : isSignup
+                ? "Sign Up"
+                : "Login"}
             </button>
           </form>
+
+          {error && (
+            <div className="text-red-500 text-sm text-center mt-2">
+              {error}
+            </div>
+          )}
 
           <div className="text-center mt-4">
             <p className="text-sm">
               {isSignup ? "Already have an account?" : "New user?"}{" "}
               <button
                 onClick={() => setIsSignup(!isSignup)}
-                className="text-[#057dcd] hover:underline"
+                className="text-[#057dcd] hover:underline font-medium"
               >
                 {isSignup ? "Login here" : "Create account"}
               </button>
