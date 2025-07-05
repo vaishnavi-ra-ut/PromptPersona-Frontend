@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "./utils/authSlice";
 import API from "./utils/axios";
+import Personas from "./components/Personas";
 
 function App() {
 
@@ -30,7 +31,7 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/" element={<h1 className="p-8">Welcome to PromptPersona 👋</h1>} />
+        <Route path="/" element={<Personas/>} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/edit" element={<EditProfile />} />
       </Routes>

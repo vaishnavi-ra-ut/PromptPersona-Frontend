@@ -67,7 +67,7 @@ const Navbar = () => {
 
         {/* Greeting */}
         {user && (
-          <p className="hidden md:block text-md mb-1 font-medium">
+          <p className="hidden md:block text-sm mb-1 font-medium">
             Hi, {user.name}
           </p>
         )}
@@ -75,7 +75,7 @@ const Navbar = () => {
         {/* Avatar Dropdown */}
         <div className="dropdown dropdown-end">
           <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-            <div className="w-10 h-10 rounded-3xl ring ring-[#636ae8] ring-offset-base-100 ring-offset-2">
+            <div className="w-8 h-10 rounded-3xl ring ring-[#636ae8] ring-offset-base-100 ring-offset-2">
               <img
                 alt="User Avatar"
                 src={getGenderAvatar()}
@@ -84,7 +84,7 @@ const Navbar = () => {
           </label>
           <ul
             tabIndex={0}
-            className="dropdown-content menu mt-6 z-[1] p-2 shadow bg-base-200 rounded-box w-48"
+            className="dropdown-content menu mt-6 z-[1] p-2 bg-base-200 rounded-box w-48 shadow-xl"
           >
             {user ? (
               <>
