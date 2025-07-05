@@ -57,7 +57,7 @@ const AuthPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-base-100">
       <div className="card w-full max-w-md shadow-lg bg-base-200 -mt-20">
         <div className="card-body">
-          <h2 className="text-2xl font-bold text-center text-[#057dcd]">
+          <h2 className="text-2xl font-bold text-center text-[#636ae8]">
             {isSignup ? "Create Account" : "Welcome Back"}
           </h2>
 
@@ -121,7 +121,7 @@ const AuthPage = () => {
 
             <button
               type="submit"
-              className="btn bg-[#057dcd] w-full"
+              className="btn bg-[#636ae8] w-full"
               disabled={loading}
             >
               {loading
@@ -143,7 +143,7 @@ const AuthPage = () => {
               {isSignup ? "Already have an account?" : "New user?"}{" "}
               <button
                 onClick={() => setIsSignup(!isSignup)}
-                className="text-[#057dcd] hover:underline font-medium"
+                className="text-[#636ae8] hover:underline font-medium"
               >
                 {isSignup ? "Login here" : "Create account"}
               </button>

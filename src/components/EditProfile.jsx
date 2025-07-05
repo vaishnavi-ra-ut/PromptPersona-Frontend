@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect , useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -8,6 +8,13 @@ const EditProfile = () => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+  if (!user) {
+    navigate("/auth");
+  }
+}, [user, navigate]);
+
 
   const [form, setForm] = useState({
     name: user?.name || "",
@@ -27,6 +34,7 @@ const EditProfile = () => {
 
   const saveProfile = async () => {
     try {
+
       const res = await axios.put("http://localhost:5000/api/profile/edit", form, {
         withCredentials: true
       });
@@ -37,7 +45,6 @@ const EditProfile = () => {
       setToast(false);
       navigate("/"); 
     }, 3000);
-
 
     } catch (err) {
       setError(err?.response?.data?.error || err.message || "Failed to update");
@@ -61,8 +68,8 @@ const EditProfile = () => {
         <div className="text-red-500 text-sm text-center  mb-2">{error}</div>
       )}
 
-      <div className="card w-full max-w-xl bg-base-200 shadow-md p-6">
-        <h2 className="text-xl font-bold text-center mb-6">Edit Your Profile</h2>
+      <div className="card w-full max-w-xl bg-base-200 shadow-md p-6 border border-[#636ae8] rounded-lg">
+        <h2 className="text-xl font-bold text-center mb-6 text-[#636ae8]">Edit Your Profile</h2>
         <form onSubmit={handleSubmit} className="space-y-8">
           <input
             type="text"
@@ -97,10 +104,10 @@ const EditProfile = () => {
           </select>
 
           <div className="flex justify-between gap-4 mr-4">
-            <button type="button" className="btn btn-outline w-1/2" onClick={() => navigate("/")}>
+            <button type="button" className="btn w-1/2 " onClick={() => navigate("/")}>
               Do It Later
             </button>
-            <button type="submit" className="btn bg-[#057dcd] w-1/2">
+            <button type="submit" className="btn bg-[#4b5bbf] w-1/2 hover:bg-[#636ae8] text-white">
               Save
             </button>
           </div>

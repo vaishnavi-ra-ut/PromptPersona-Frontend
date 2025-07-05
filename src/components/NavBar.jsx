@@ -1,25 +1,33 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link,  useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../utils/authSlice";
 import { useTheme } from "../utils/useTheme";
+import API from "../utils/axios";
 
 const Navbar = () => {
   const [theme, setTheme] = useTheme();
   const user = useSelector((state) => state.auth.user);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = async () => {
+  try {
+    await API.post("/auth/logout", {}, { withCredentials: true }); // clear cookie
+    dispatch(logout()); 
     navigate("/auth");
-  };
 
-  if (location.pathname === "/auth") return null;
+  } catch (err) {
+    console.error("Logout failed:", err);
+  }
+};
+
+  // if (location.pathname === "/auth") return null;
 
   const getGenderAvatar = () => {
     if (user?.gender === "male")
@@ -35,11 +43,7 @@ const Navbar = () => {
     <div className="navbar bg-base-300 shadow-sm px-6 justify-between">
       {/* Logo */}
       <Link to="/" className="flex items-center">
-        <img
-          src="https://i.postimg.cc/VLdr9wj5/Screenshot-2025-07-04-131202-removebg-preview.png"
-          alt="PromptPersona"
-          className="w-[7.5rem]"
-        />
+        <h3 className="text-xl font-bold text-[#636ae8]">PromptPersona</h3>
       </Link>
 
       <div className="flex items-center gap-4">
@@ -71,7 +75,7 @@ const Navbar = () => {
         {/* Avatar Dropdown */}
         <div className="dropdown dropdown-end">
           <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-            <div className="w-10 h-10 rounded-3xl ring ring-[#057dcd] ring-offset-base-100 ring-offset-2">
+            <div className="w-10 h-10 rounded-3xl ring ring-[#636ae8] ring-offset-base-100 ring-offset-2">
               <img
                 alt="User Avatar"
                 src={getGenderAvatar()}
@@ -80,7 +84,7 @@ const Navbar = () => {
           </label>
           <ul
             tabIndex={0}
-            className="dropdown-content menu mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-48"
+            className="dropdown-content menu mt-6 z-[1] p-2 shadow bg-base-200 rounded-box w-48"
           >
             {user ? (
               <>
