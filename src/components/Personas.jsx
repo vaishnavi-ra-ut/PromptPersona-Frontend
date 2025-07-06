@@ -4,6 +4,7 @@ import API from "../utils/axios";
 
 const categories = [
   "All",
+  "Favorites",
   "Emotional & Self Help",
   "Spiritual & Mystical",
   "Learning",
@@ -42,7 +43,8 @@ const Personas = () => {
   });
 
   return (
-    <div className="px-6 py-8">
+    <div className="px-6 py-4 mt-5">
+        <div className="text-[#636ae8] text-xl font-semibold flex justify-center mb-4">Explore Personas</div>
       {/* Search Bar */}
       <div className="w-full flex justify-center mb-4">
         <input
@@ -55,12 +57,12 @@ const Personas = () => {
       </div>
 
       {/* Categories */}
-      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+      <div className="flex gap-3 ml-2 overflow-x-auto pb-4 scrollbar-hide ">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`btn btn-sm whitespace-nowrap rounded-full ${
+            className={`btn btn-sm whitespace-nowrap rounded-full opacity-85 ${
               selectedCategory === cat ? "btn-primary" : "btn-soft"
             }`}
           >

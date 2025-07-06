@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 const PersonaCard = ({ persona }) => {
   const navigate = useNavigate();
 
-  const handleStartChat = () => {
-    navigate(`/chat/${persona.name}`, { state: { persona } });
+   const handleChatNow = () => {
+    navigate("/chat/start", { state: { persona } });
   };
 
   return (
@@ -20,11 +20,11 @@ const PersonaCard = ({ persona }) => {
         <h2 className="text-[16px] font-semibold mb-2">
          {persona.name}
         </h2>
-        <p className="text-[13px] text-gray-500">{persona.description}</p>
+        <p className="text-[13px] opacity-60">{persona.description}</p>
       </div>
       <div className="mt-auto">
         <button
-          onClick={handleStartChat}
+          onClick={handleChatNow}
           className="btn btn-sm bg-[#636ae8] w-full mt-4 mb-4 hover:bg-[#5c60a7] text-white transition-colors duration-200"
         >
           Chat Now

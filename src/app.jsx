@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "./utils/authSlice";
 import API from "./utils/axios";
 import Personas from "./components/Personas";
+import ChatPage from "./components/ChatPage";
 
 function App() {
 
@@ -34,6 +35,7 @@ function App() {
         <Route path="/" element={<Personas/>} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/edit" element={<EditProfile />} />
+        <Route path="/chat/start" element={<ChatPage />} />
       </Routes>
     </Router>
   );
