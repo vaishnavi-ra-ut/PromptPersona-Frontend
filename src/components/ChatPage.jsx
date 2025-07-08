@@ -6,20 +6,17 @@ import ChatUI from "../components/ChatUI";
 
 const ChatPage = () => {
   const { state } = useLocation();
-  //const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const [chatId, setChatId] = useState(null);
   const [error, setError] = useState(null);
   const [persona, setPersona] = useState(null);
 
   useEffect(() => {
-    // ⛔️ Check for missing persona
     if (!state || !state.persona) {
       setError("Invalid access. Please select a persona first.");
       return;
     }
 
-    // ⛔️ Check for unauthenticated access
     if (!user) {
       setError("Please login to start chatting.");
       return;
@@ -30,11 +27,10 @@ const ChatPage = () => {
         const res = await API.post("/chat/start", {
           persona: state.persona,
         });
-        console.log(res.data);
         setChatId(res.data.chat._id);
         setPersona(res.data.chat.persona);
       } catch (err) {
-        console.error("Chat start failed:", err);
+        console.error("Error starting chat:", err);
         setError("Failed to start chat. Please try again later.");
       }
     };
@@ -57,7 +53,7 @@ const ChatPage = () => {
       </div>
     );
   }
-  console.log("Chat ID:", chatId);
+
   return <ChatUI chatId={chatId} persona={persona} />;
 };
 

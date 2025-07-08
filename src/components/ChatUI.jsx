@@ -11,48 +11,52 @@ const ChatUI = ({ chatId, persona }) => {
   const [messages, setMessages] = useState([
     {
       sender: persona.name,
-      content: `Hi! I'm ${persona.name}`
-    }
+      content: `Hi! I'm ${persona.name}`,
+    },
   ]);
   const [input, setInput] = useState("");
 
   const handleSend = async () => {
-  if (!input.trim()) return;
+    if (!input.trim()) return;
 
-  const userMessage = input;
-
-  // Add user's message to UI
-  setMessages((prev) => [
-    ...prev,
-    { sender: user?.name || "You", content: userMessage }
-  ]);
-  setInput("");
-
-  try {
-    const res = await API.post("/ai/generate", {
-      message: userMessage,
-      personaPrompt: persona.prompt,
-      chatId: chatId // optional if you want to log it
-    });
-
-    const botReply = res.data.reply;
+    const userMessage = input;
+    setInput("");
 
     setMessages((prev) => [
       ...prev,
-      { sender: persona.name, content: botReply }
+      { sender: user?.name || "You", content: userMessage },
     ]);
-  } catch (err) {
-    console.error("AI reply error:", err);
-    setMessages((prev) => [
-      ...prev,
-      {
-        sender: persona.name,
-        content: "Hmm... I’m having trouble replying right now. Try again later!"
-      }
-    ]);
-  }
-};
 
+    try {
+      const filledPrompt = persona.prompt
+        .replace("{age}", user?.age || "young")
+        .replace("{gender}", user?.gender || "person");
+
+      const finalPrompt = `${filledPrompt}\nKeep replies short, relevant, and in character.`;
+
+      const res = await API.post("/ai/generate", {
+        message: userMessage,
+        personaPrompt: finalPrompt,
+        chatId,
+      });
+
+      const botReply = res.data.reply;
+
+      setMessages((prev) => [
+        ...prev,
+        { sender: persona.name, content: botReply },
+      ]);
+    } catch (err) {
+      console.error("AI reply error:", err);
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: persona.name,
+          content: "Hmm... I’m having trouble replying right now. Try again later!",
+        },
+      ]);
+    }
+  };
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -72,7 +76,7 @@ const ChatUI = ({ chatId, persona }) => {
   }
 
   return (
-    <div className="flex flex-col max-h-screen  w-full bg-base-100">
+    <div className="flex flex-col max-h-screen w-full bg-base-100">
       {/* Header */}
       <div className="flex items-center gap-4 h-14 p-4 shadow-md bg-base-100 border-b-1 border-gray-400 sticky top-16 z-10">
         <div className="avatar">
@@ -87,7 +91,7 @@ const ChatUI = ({ chatId, persona }) => {
       </div>
 
       {/* Chat Body */}
-      <div className="flex-1 overflow-y-auto px-5 py-4 mt-14 mb-10 space-y-1 ">
+      <div className="flex-1 overflow-y-auto px-5 py-4 mt-14 mb-10 space-y-1">
         {messages.map((msg, idx) => (
           <div
             key={idx}
@@ -107,16 +111,19 @@ const ChatUI = ({ chatId, persona }) => {
       </div>
 
       {/* Input */}
-      <div className="p-3 bg-base-300 bottom-0 fixed left-0 w-full ">
+      <div className="p-3 bg-base-300 bottom-0 fixed left-0 w-full">
         <div className="flex items-center gap-3 mx-4">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
-            className="input input-bordered w-full h-8 p-3 pb-4 rounded-lg "
+            className="input input-bordered w-full h-8 p-3 pb-4 rounded-lg"
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
-          <button onClick={handleSend} className="btn bg-[#636ae8] rounded-lg h-8 ">
+          <button
+            onClick={handleSend}
+            className="btn bg-[#636ae8] rounded-lg h-8"
+          >
             Send
           </button>
         </div>
