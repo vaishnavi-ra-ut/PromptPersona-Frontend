@@ -8,6 +8,7 @@ const ChatUI = ({ chatId, persona }) => {
   const navigate = useNavigate();
   const bottomRef = useRef();
 
+  const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState([
     {
       sender: persona.name,
@@ -24,27 +25,29 @@ const ChatUI = ({ chatId, persona }) => {
 
     setMessages((prev) => [
       ...prev,
-      { sender: user?.name || "You", content: userMessage },
+      { sender: user?.name || "You", content: userMessage }
     ]);
+
+    setIsTyping(true); // Start typing
 
     try {
       const filledPrompt = persona.prompt
         .replace("{age}", user?.age || "young")
         .replace("{gender}", user?.gender || "person");
 
-      const finalPrompt = `${filledPrompt}\nKeep replies short, relevant, and in character.`;
+      const finalPrompt = `${filledPrompt}\nPlease keep your responses short, clear, and to the point.`;
 
       const res = await API.post("/ai/generate", {
         message: userMessage,
         personaPrompt: finalPrompt,
-        chatId,
+        chatId
       });
 
       const botReply = res.data.reply;
 
       setMessages((prev) => [
         ...prev,
-        { sender: persona.name, content: botReply },
+        { sender: persona.name, content: botReply }
       ]);
     } catch (err) {
       console.error("AI reply error:", err);
@@ -52,15 +55,17 @@ const ChatUI = ({ chatId, persona }) => {
         ...prev,
         {
           sender: persona.name,
-          content: "Hmm... I’m having trouble replying right now. Try again later!",
-        },
+          content: "Hmm... I’m having trouble replying right now. Try again later!"
+        }
       ]);
+    } finally {
+      setIsTyping(false); // Stop typing
     }
   };
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isTyping]);
 
   if (!persona || !chatId) {
     return (
@@ -107,6 +112,19 @@ const ChatUI = ({ chatId, persona }) => {
             </div>
           </div>
         ))}
+
+        {/* Typing indicator after last message */}
+        {isTyping && (
+          <div className="chat chat-start">
+            <div className="chat-header text-xs font-medium mb-1 text-gray-400">
+              {persona.name}
+            </div>
+            <div className=" chat-bubble bg-base-200 text-gray-400 italic animate-pulse text-sm">
+              Typing...
+            </div>
+          </div>
+        )}
+
         <div ref={bottomRef} />
       </div>
 
