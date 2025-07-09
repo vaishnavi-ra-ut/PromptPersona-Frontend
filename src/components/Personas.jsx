@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import PersonaCard from "./PersonaCard";
 import API from "../utils/axios";
+import { useNavigate } from "react-router-dom"; 
 
 const categories = [
   "All",
   "Favorites",
+  "Your Personas",
   "Emotional & Self Help",
   "Spiritual & Mystical",
   "Learning",
@@ -18,6 +20,7 @@ const Personas = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [personas, setPersonas] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPersonas = async () => {
@@ -43,7 +46,7 @@ const Personas = () => {
   });
 
   return (
-    <div className="px-6 py-4 mt-5">
+    <div className="px-6 py-4 mt-16">
         <div className="text-[#636ae8] text-xl font-semibold flex justify-center mb-4">Explore Personas</div>
       {/* Search Bar */}
       <div className="w-full flex justify-center mb-4">
@@ -54,6 +57,15 @@ const Personas = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="input w-full max-w-md h-8 rounded-full placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#636ae8] transition-all duration-200 hover:ring-2 hover:ring-[#636ae8] bg-base-200 text-gray-600"
         />
+      </div>
+
+      <div className="flex justify-center mb-4">
+        <button
+    onClick={() => navigate("/personas/custom")}
+    className="btn btn-sm text-[#636ae8] bg-base-100 hover:bg-base-300 border-[#636ae8] hover:border-[#636ae8] transition-all duration-200 rounded-full flex items-center gap-2 px-4"
+  >
+    + Create Persona
+  </button>
       </div>
 
       {/* Categories */}

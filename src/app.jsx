@@ -8,6 +8,7 @@ import { setCredentials } from "./utils/authSlice";
 import API from "./utils/axios";
 import Personas from "./components/Personas";
 import ChatPage from "./components/ChatPage";
+import CustomPersona from "./components/CustomPersona";
 
 function App() {
 
@@ -36,6 +37,7 @@ function App() {
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/edit" element={<EditProfile />} />
         <Route path="/chat/start" element={<ChatPage />} />
+        <Route path="/personas/custom" element={<CustomPersona />} />
       </Routes>
     </Router>
   );
