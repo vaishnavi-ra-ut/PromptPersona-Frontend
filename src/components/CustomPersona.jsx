@@ -42,7 +42,9 @@ const CreatePersona = () => {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <p className="text-xl text-gray-500">Please log in to create a persona.</p>
-        <button className="btn mt-4" onClick={() => navigate("/login")}>Login</button>
+        <button className="btn mt-4 bg-[#636ae8] text-white hover:bg-[#4a54c4] transition-all duration-200" onClick={() => navigate("/auth")}>
+          Login
+        </button>
       </div>
     );
   }

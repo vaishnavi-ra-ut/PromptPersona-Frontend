@@ -55,7 +55,7 @@ const AuthPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-100">
-      <div className="card w-full max-w-md shadow-lg bg-base-200 -mt-20">
+      <div className="card w-full max-w-md shadow-lg bg-base-200">
         <div className="card-body">
           <h2 className="text-2xl font-bold text-center text-[#636ae8]">
             {isSignup ? "Create Account" : "Welcome Back"}
@@ -150,10 +150,10 @@ const AuthPage = () => {
             </p>
           </div>
           <div className="text-center ">
-  <p className="text-sm text-gray-600">or</p>
+  <p className="text-sm text-gray-500">or</p>
   <button
     type="button"
-    className="w-28 mt-2 text-gray-600 text-sm hover:underline"
+    className="w-28 mt-2 text-gray-500 text-sm hover:underline"
     onClick={() => navigate("/")}
   >
     Skip for now →
