@@ -65,12 +65,12 @@ const Navbar = () => {
           </div>
         </label>
 
-        {/* Greeting */}
+    {/*
         {user && (
           <p className="hidden md:block text-sm mb-1 font-medium">
             Hi, {user.name}
           </p>
-        )}
+        )} */}
 
         {/* Avatar Dropdown */}
         <div className="dropdown dropdown-end">

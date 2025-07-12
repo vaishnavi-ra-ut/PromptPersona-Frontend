@@ -14,14 +14,16 @@ const categories = [
   "Career",
   "Everyday Companions",
   "Fun",
-  "Roleplay",
+  "Roleplay"
 ];
 
 const Personas = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [personas, setPersonas] = useState([]);
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [favoriteIds, setFavoriteIds] = useState([]);
+  const [showLoginMessage, setShowLoginMessage] = useState(false);
+
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
@@ -36,19 +38,37 @@ const Personas = () => {
       }
     };
 
-    fetchPersonas();
-  }, []);
+    const fetchFavorites = async () => {
+      if (!user) return;
+      try {
+        const { data } = await API.get("/routes/Fav/favorites");
+        setFavoriteIds(data.favorites.map((p) => p._id));
+      } catch (err) {
+        console.error("Failed to load favorites", err);
+      }
+    };
 
-  const handleCategoryClick = (cat) => {
-    if (cat === "Your Personas" && !user) {
-      setShowLoginPrompt(true);
-      return;
-    }
-    setShowLoginPrompt(false);
-    setSelectedCategory(cat);
-  };
+    fetchPersonas();
+    fetchFavorites();
+  }, [user]);
 
   const filtered = personas.filter((p) => {
+    if (selectedCategory === "Favorites") {
+      if (!user) {
+        setShowLoginMessage(true);
+        return false;
+      }
+      return favoriteIds.includes(p._id);
+    }
+
+    if (selectedCategory === "Your Personas") {
+      if (!user) {
+        setShowLoginMessage(true);
+        return false;
+      }
+      return p.createdBy === user._id;
+    }
+
     const matchesCategory =
       selectedCategory === "All" || p.category === selectedCategory;
     const matchesSearch =
@@ -59,9 +79,17 @@ const Personas = () => {
 
   return (
     <div className="px-6 py-4 mt-16">
-      {/* Explore Title */}
-      <div className="text-[#636ae8] text-xl font-semibold flex justify-center mb-4">
-        Explore Personas
+      <div className="flex justify-between items-center mb-6 mx-auto sm:flex-row flex-col sm:gap-0 gap-4">
+        <div className="text-[#636ae8] text-xl font-semibold mx-auto md:pl-28 ">
+          {user ? "Hi user.name👋" : "Hi There , Personas For You "}
+        </div>
+
+      <button
+          onClick={() => navigate("/personas/custom")}
+          className="btn btn-sm text-[#636ae8] bg-base-100 hover:bg-base-300 border-[#636ae8] hover:border-[#636ae8] transition-all duration-200 rounded-full shadow-md hover:shadow-lg items-center gap-2 "
+        >
+          + Create Persona
+        </button>
       </div>
 
       {/* Search Bar */}
@@ -75,22 +103,19 @@ const Personas = () => {
         />
       </div>
 
-      {/* Create Persona Button */}
       <div className="flex justify-center mb-4">
-        <button
-          onClick={() => navigate("/personas/custom")}
-          className="btn btn-sm text-[#636ae8] bg-base-100 hover:bg-base-300 border-[#636ae8] hover:border-[#636ae8] transition-all duration-200 rounded-full flex items-center gap-2 px-4"
-        >
-          + Create Persona
-        </button>
+        
       </div>
 
       {/* Categories */}
-      <div className="flex gap-3 ml-2 overflow-x-auto pb-4 scrollbar-hide">
+      <div className="flex gap-3 ml-2 overflow-x-auto pb-4 scrollbar-hide ">
         {categories.map((cat) => (
           <button
             key={cat}
-            onClick={() => handleCategoryClick(cat)}
+            onClick={() => {
+              setSelectedCategory(cat);
+              setShowLoginMessage(false);
+            }}
             className={`btn btn-sm whitespace-nowrap rounded-full opacity-85 ${
               selectedCategory === cat ? "btn-primary" : "btn-soft"
             }`}
@@ -101,29 +126,30 @@ const Personas = () => {
       </div>
 
       {/* Login Prompt */}
-      {showLoginPrompt ? (
-        <div className="flex flex-col items-center justify-center mt-10 text-center text-gray-600">
-          <p className="text-lg mb-4">
-            Please login to view or create your custom personas.
+      {showLoginMessage && !user && (
+        <div className="text-center my-6">
+          <p className="text-gray-600 mb-2">
+            Please login to view or create your personas.
           </p>
           <button
             onClick={() => navigate("/auth")}
-            className="btn btn-primary rounded-full px-6 py-2"
+            className="btn btn-primary btn-sm rounded-full"
           >
             Login
           </button>
         </div>
-      ) : (
-        // Persona Cards Grid
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 mt-4">
-          {filtered.map((persona, index) => (
-            <PersonaCard
-              key={persona._id || persona.name || index}
-              persona={persona}
-            />
-          ))}
-        </div>
       )}
+
+      {/* Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 mt-3">
+        {filtered.map((persona, index) => (
+          <PersonaCard
+            key={persona._id || persona.name || index}
+            persona={persona}
+            isFavorite={favoriteIds.includes(persona._id)}
+          />
+        ))}
+      </div>
     </div>
   );
 };
