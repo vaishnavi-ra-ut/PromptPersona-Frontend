@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import PersonaCard from "./PersonaCard";
 import API from "../utils/axios";
+import { fetchFavorites, toggleFavorite } from "../utils/favSlice"; 
 
 const categories = [
   "All",
@@ -14,21 +15,22 @@ const categories = [
   "Career",
   "Everyday Companions",
   "Fun",
-  "Roleplay"
+  "Roleplay",
 ];
 
 const Personas = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [personas, setPersonas] = useState([]);
-  const [favoriteIds, setFavoriteIds] = useState([]);
   const [showLoginMessage, setShowLoginMessage] = useState(false);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  const favoriteIds = useSelector((state) => state.favorites.favorites);
 
   useEffect(() => {
-    const fetchPersonas = async () => {
+    const fetchData = async () => {
       try {
         const { data } = await API.get("/personas");
         const combined = [...data.default, ...data.custom];
@@ -38,55 +40,67 @@ const Personas = () => {
       }
     };
 
-    const fetchFavorites = async () => {
-      if (!user) return;
-      try {
-        const { data } = await API.get("/routes/Fav/favorites");
-        setFavoriteIds(data.favorites.map((p) => p._id));
-      } catch (err) {
-        console.error("Failed to load favorites", err);
-      }
-    };
+    fetchData();
 
-    fetchPersonas();
-    fetchFavorites();
-  }, [user]);
-
-  const filtered = personas.filter((p) => {
-    if (selectedCategory === "Favorites") {
-      if (!user) {
-        setShowLoginMessage(true);
-        return false;
-      }
-      return favoriteIds.includes(p._id);
+    if (user) {
+      dispatch(fetchFavorites());
     }
+  }, [user, dispatch]);
 
-    if (selectedCategory === "Your Personas") {
-      if (!user) {
-        setShowLoginMessage(true);
-        return false;
-      }
-      return p.createdBy === user._id;
+  useEffect(() => {
+    if (
+      (selectedCategory === "Favorites" || selectedCategory === "Your Personas") &&
+      !user
+    ) {
+      setShowLoginMessage(true);
+    } else {
+      setShowLoginMessage(false);
     }
+  }, [selectedCategory, user]);
 
-    const matchesCategory =
-      selectedCategory === "All" || p.category === selectedCategory;
-    const matchesSearch =
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const handleToggleFavorite = (personaId) => {
+    if (!user) {
+      setShowLoginMessage(true);
+      return;
+    }
+    dispatch(toggleFavorite(personaId));
+  };
+
+  let filtered = [];
+
+  if (selectedCategory === "Favorites") {
+    if (!user) {
+      filtered = [];
+    } else {
+      filtered = personas.filter((p) => favoriteIds.includes(p._id));
+    }
+  } else if (selectedCategory === "Your Personas") {
+    if (!user) {
+      filtered = [];
+    } else {
+      filtered = personas.filter((p) => p.createdBy === user._id);
+    }
+  } else {
+    filtered = personas.filter((p) => {
+      const matchesCategory =
+        selectedCategory === "All" || p.category === selectedCategory;
+      const matchesSearch =
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.description.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }
 
   return (
     <div className="px-6 py-4 mt-16">
       <div className="flex justify-between items-center mb-6 mx-auto sm:flex-row flex-col sm:gap-0 gap-4">
         <div className="text-[#636ae8] text-xl font-semibold mx-auto md:pl-28 ">
-          {user ? "Hi user.name👋" : "Hi There , Personas For You "}
+          {user ? `Hi ${user.name} 👋` : "Hi There, Personas For You"}
         </div>
 
-      <button
+        <button
           onClick={() => navigate("/personas/custom")}
-          className="btn btn-sm text-[#636ae8] bg-base-100 hover:bg-base-300 border-[#636ae8] hover:border-[#636ae8] transition-all duration-200 rounded-full shadow-md hover:shadow-lg items-center gap-2 "
+          className="btn btn-sm text-[#636ae8] bg-base-100 hover:bg-base-300 border-[#636ae8] hover:border-[#636ae8] transition-all duration-200 rounded-full shadow-md hover:shadow-lg items-center gap-2"
         >
           + Create Persona
         </button>
@@ -103,12 +117,8 @@ const Personas = () => {
         />
       </div>
 
-      <div className="flex justify-center mb-4">
-        
-      </div>
-
       {/* Categories */}
-      <div className="flex gap-3 ml-2 overflow-x-auto pb-4 scrollbar-hide ">
+      <div className="flex gap-3 ml-2 overflow-x-auto pb-4 scrollbar-hide">
         {categories.map((cat) => (
           <button
             key={cat}
@@ -147,6 +157,7 @@ const Personas = () => {
             key={persona._id || persona.name || index}
             persona={persona}
             isFavorite={favoriteIds.includes(persona._id)}
+            onToggleFavorite={handleToggleFavorite}
           />
         ))}
       </div>

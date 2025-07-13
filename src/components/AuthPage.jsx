@@ -68,7 +68,8 @@ const AuthPage = () => {
                   type="text"
                   name="name"
                   placeholder="First Name"
-                  value={form.name}
+              value={form.name}             
+              
                   onChange={handleChange}
                   className="input input-bordered w-full"
                   required
