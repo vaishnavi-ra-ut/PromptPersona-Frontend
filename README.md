@@ -109,7 +109,7 @@ PromptPersona is a web app that lets users interact with AI personas and even cr
 
 
 
-🧠 Author & Credits
+#### Author & Credits
 Built by Vaishnavi (2025)
 
 AI generation powered by Google Gemini (via backend)
