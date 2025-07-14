@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import PersonaCard from "./PersonaCard";
 import API from "../utils/axios";
-import { fetchFavorites, toggleFavorite } from "../utils/favSlice"; 
 
 const categories = [
   "All",
-  "Favorites",
   "Your Personas",
   "Emotional & Self Help",
   "Spiritual & Mystical",
@@ -21,67 +19,45 @@ const categories = [
 const Personas = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
-  const [personas, setPersonas] = useState([]);
+  const [defaultPersonas, setDefaultPersonas] = useState([]);
+  const [customPersonas, setCustomPersonas] = useState([]);
   const [showLoginMessage, setShowLoginMessage] = useState(false);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  const favoriteIds = useSelector((state) => state.favorites.favorites);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const { data } = await API.get("/personas");
-        const combined = [...data.default, ...data.custom];
-        setPersonas(combined);
+        setDefaultPersonas(data.default || []);
+        setCustomPersonas(data.custom || []);
       } catch (err) {
         console.error("Failed to load personas", err);
       }
     };
 
     fetchData();
-
-    if (user) {
-      dispatch(fetchFavorites());
-    }
-  }, [user, dispatch]);
+  }, []);
 
   useEffect(() => {
-    if (
-      (selectedCategory === "Favorites" || selectedCategory === "Your Personas") &&
-      !user
-    ) {
+    if (selectedCategory === "Your Personas" && !user) {
       setShowLoginMessage(true);
     } else {
       setShowLoginMessage(false);
     }
   }, [selectedCategory, user]);
 
-  const handleToggleFavorite = (personaId) => {
-    if (!user) {
-      setShowLoginMessage(true);
-      return;
-    }
-    dispatch(toggleFavorite(personaId));
-  };
-
+  // Filter logic
   let filtered = [];
 
-  if (selectedCategory === "Favorites") {
-    if (!user) {
-      filtered = [];
-    } else {
-      filtered = personas.filter((p) => favoriteIds.includes(p._id));
-    }
-  } else if (selectedCategory === "Your Personas") {
-    if (!user) {
-      filtered = [];
-    } else {
-      filtered = personas.filter((p) => p.createdBy === user._id);
-    }
+  if (selectedCategory === "Your Personas") {
+    filtered = user
+      ? customPersonas.filter((p) => p.createdBy === user._id)
+      : [];
   } else {
-    filtered = personas.filter((p) => {
+    const combined = [...defaultPersonas, ...customPersonas];
+    filtered = combined.filter((p) => {
       const matchesCategory =
         selectedCategory === "All" || p.category === selectedCategory;
       const matchesSearch =
@@ -94,7 +70,7 @@ const Personas = () => {
   return (
     <div className="px-6 py-4 mt-16">
       <div className="flex justify-between items-center mb-6 mx-auto sm:flex-row flex-col sm:gap-0 gap-4">
-        <div className="text-[#636ae8] text-xl font-semibold mx-auto md:pl-28 ">
+        <div className="text-[#636ae8] text-xl font-semibold mx-auto md:pl-28">
           {user ? `Hi ${user.name} 👋` : "Hi There, Personas For You"}
         </div>
 
@@ -153,12 +129,7 @@ const Personas = () => {
       {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 mt-3">
         {filtered.map((persona, index) => (
-          <PersonaCard
-            key={persona._id || persona.name || index}
-            persona={persona}
-            isFavorite={favoriteIds.includes(persona._id)}
-            onToggleFavorite={handleToggleFavorite}
-          />
+          <PersonaCard key={persona._id || index} persona={persona} />
         ))}
       </div>
     </div>
