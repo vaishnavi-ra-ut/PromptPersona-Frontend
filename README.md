@@ -1,81 +1,118 @@
-## Starting Prompt Persona FRONTEND 
+🎨 PromptPersona — Frontend
+PromptPersona is a web app that lets users interact with AI personas and even create their own. This frontend is built with React, Vite, Tailwind CSS, DaisyUI, and Redux Toolkit.
 
-1. Project Setup
-    Set up React + Vite frontend
-
-    Set up Express + MongoDB backend
-
-    Installed and configured Tailwind CSS + DaisyUI
-
-    Setup Redux Toolkit for state management
-
-    Created reusable API wrapper with Axios
-
-2. Authentication System
- 
-    User Signup + Login with JWT
-
-    Stored tokens securely using HttpOnly cookies
-
-    Built /auth route with dynamic form toggling
-
-    Added Redux slice for auth with setCredentials() and logout()
-
-    Auto-login on page reload using cookie-based session check (/profile)
-
-    Created secure logout flow (backend + frontend)
-
-    Protected /edit page from unauthorized access
+![alt text](image.png)
 
 
-3. Edit Profile Feature
-    
-    Built EditProfile page with name, age, gender input
+🛠️ Tech Stack
+        Tech	                    Purpose
+    React + Vite	Fast, modern frontend framework
+    Tailwind CSS	Utility-first CSS styling
+    DaisyUI	Component library for Tailwind
+    Redux Toolkit	Global state management
+    Axios	API communication wrapper
 
-    Option to upload profile image (removed later)
-
-    Dynamic preview of form values
-
-    Gender-based avatar logic using 3 static images:
-
-            Male → avatarB.png
-
-            Female → avatarG.png
-
-            Other → animal-avatar.png
-
-    Stored updated data in DB via PUT /profile/edit
-
-    Updated Redux store on profile save
-
-    Toast message on successful save (🟢)
+📁 Project Structure
+    📦src
+    ┣ 📂components         # Shared UI components (Navbar, PersonaCard, etc.)
+    ┣ 📂pages              # Route-level components (Home, Auth, EditProfile, etc.)
+    ┣ 📂redux              # Redux slices (auth, etc.)
+    ┣ 📂utils              # Axios wrapper and helpers
+    ┣ App.jsx             # Main layout + routing
+    ┗ main.jsx            # Root render with Redux Provider
 
 
-4. Navbar Component
-  
-  Built responsive Navbar with:
+🔓 Authentication Flow
+    User can sign up or log in via /auth route
 
-    Logo
+    Uses JWT stored in HttpOnly cookie
+
+    On page load, /profile is auto-fetched to check active session
+
+    Redux slice manages auth state:
+
+    setCredentials() on login
+
+    logout() clears state + cookie
+
+    /edit page is protected unless user is logged in
+
+
+✏️ Edit Profile Page
+    Route: /edit-profile
+
+    Form includes:
+
+        Name
+
+        Age
+
+        Gender (Male / Female / Other)
+
+        Avatar displayed based on gender:
+
+            👦 avatarB.png
+
+            👧 avatarG.png
+
+            🐯 animal-avatar.png
+
+    PUT request to /profile/edit updates DB
+
+    Redux state is updated upon success
+
+    Success toast notification shown
+
+
+🧠 AI Personas (Home Page)
+    Route: /
+
+    Loads both:
+
+        Default personas (static)
+
+        User-created personas (from DB)
+
+    Search bar and category filters
+
+    Click a card → starts chat via /chat/start
+
+
+💬 AI Chat Interface
+    Chat-like UI for each persona
+
+    Typing indicator ("Typing...") shown during AI generation
+
+    Messages saved and displayed in conversation format
+
+    AI reply is fetched via /ai/generate (handled in backend)
+
+
+✨ UX Enhancements
+    Gender-based avatars with colorful rings
 
     Theme toggle (🌙 / ☀️)
 
-    Greeting (Hi, {user.name})
+    Animated toasts on profile save or error
 
-    Avatar with dropdown
-
-    Avatar shows gender-based image (no profile upload now)
-
-    Hide Navbar on /auth page (optional toggle)
-
-    Added Logout button to dropdown that: Hits backend /logout , Clears Redux & cookie , Redirects to /auth
+    Beautiful and consistent layout using Tailwind + DaisyUI
 
 
-5. Visual & UX Enhancements
-    
-    Animated toast using Tailwind keyframes (slide-in)
 
-    Avatar rings with Tailwind ring-* classes
+🔐 Pages & Routes
+        Route	                  Description
+        /	                    Explore all personas
+        /auth	                Login/Signup
+        /edit-profile	        Edit user info + avatar logic
+        /personas/custom	    Create a custom AI persona
+        /chat/start	            Chat UI with selected persona
 
-    Gender emoji icons for quick UX cues
 
-    Clean layout with Tailwind + DaisyUI
+
+🧠 Author & Credits
+Built by Vaishnavi (2025)
+
+AI generation powered by Google Gemini (via backend)
+
+UI inspired by modern chatbot experiences
+
