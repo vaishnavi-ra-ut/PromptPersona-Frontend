@@ -144,7 +144,7 @@ const AuthPage = () => {
               {isSignup ? "Already have an account?" : "New user?"}{" "}
               <button
                 onClick={() => setIsSignup(!isSignup)}
-                className="text-[#636ae8] hover:underline font-medium"
+                className="text-[#f7438b] hover:underline font-medium"
               >
                 {isSignup ? "Login here" : "Create account"}
               </button>

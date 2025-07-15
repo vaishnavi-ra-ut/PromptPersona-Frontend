@@ -76,7 +76,7 @@ const Personas = () => {
 
         <button
           onClick={() => navigate("/personas/custom")}
-          className="btn btn-sm text-[#636ae8] bg-base-100 hover:bg-base-300 border-[#636ae8] hover:border-[#636ae8] transition-all duration-200 rounded-full shadow-md hover:shadow-lg items-center gap-2"
+          className="btn btn-sm text-[#f7438b] bg-base-100 hover:bg-base-300 border-[#f7438b] hover:border-[#f7438b] transition-all duration-200 rounded-full shadow-md hover:shadow-sm items-center gap-2"
         >
           + Create Persona
         </button>

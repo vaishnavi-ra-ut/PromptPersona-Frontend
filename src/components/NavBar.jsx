@@ -40,7 +40,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="navbar bg-base-300 shadow-sm px-6 justify-between top-0 fixed left-0 right-0 z-50 ">
+    <div className="navbar bg-transparent backdrop-blur-md shadow-xs px-6 justify-between top-0 fixed left-0 right-0 z-50 ">
       {/* Logo */}
       <Link to="/" className="flex items-center">
         <h3 className="text-xl font-bold text-[#636ae8]">PromptPersona</h3>

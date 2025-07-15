@@ -9,6 +9,7 @@ import API from "./utils/axios";
 import Personas from "./components/Personas";
 import ChatPage from "./components/ChatPage";
 import CustomPersona from "./components/CustomPersona";
+import LandingPage from "./components/LandingPage";
 
 function App() {
 
@@ -33,7 +34,8 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Personas/>} />
+        <Route path="/" element={<LandingPage/>} />
+        <Route path="/personas" element={<Personas/>} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/edit" element={<EditProfile />} />
         <Route path="/chat/start" element={<ChatPage />} />
