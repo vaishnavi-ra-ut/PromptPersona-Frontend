@@ -10,6 +10,7 @@ import Personas from "./components/Personas";
 import ChatPage from "./components/ChatPage";
 import CustomPersona from "./components/CustomPersona";
 import LandingPage from "./components/LandingPage";
+import { motion } from "framer-motion";
 
 function App() {
 

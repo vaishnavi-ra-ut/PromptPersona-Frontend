@@ -1,8 +1,9 @@
 🎨 PromptPersona — Frontend
 PromptPersona is a web app that lets users interact with AI personas and even create their own. This frontend is built with React, Vite, Tailwind CSS, DaisyUI, and Redux Toolkit.
 
+![alt text](<Screenshot 2025-07-23 022731.png>)
 ![alt text](image.png)
-
+![alt text](<Screenshot 2025-07-08 235848.png>)
 
 🛠️ Tech Stack
         Tech	                    Purpose
