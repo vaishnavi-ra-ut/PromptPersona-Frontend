@@ -3,7 +3,7 @@ PromptPersona is a web app that lets users interact with AI personas and even cr
 
 ![alt text](<Screenshot 2025-07-23 022731.png>)
 ![alt text](image.png)
-![alt text](<Screenshot 2025-07-08 235848.png>)
+![alt text](<Screenshot 2025-07-23 023428.png>)
 
 🛠️ Tech Stack
         Tech	                    Purpose
