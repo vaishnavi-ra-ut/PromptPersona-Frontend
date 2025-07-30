@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://promptpersona-backend.onrender.com",
+  baseURL: "https://promptpersona-backend.onrender.com/api",
   withCredentials: true, // for cookie-based auth
 });
 
