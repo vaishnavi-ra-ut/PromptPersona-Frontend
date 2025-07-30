@@ -1,8 +1,8 @@
 import { useEffect , useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setCredentials } from "../utils/authSlice";
+import API from "../utils/axios";
 
 const EditProfile = () => {
   const user = useSelector((state) => state.auth.user);
@@ -35,7 +35,7 @@ const EditProfile = () => {
   const saveProfile = async () => {
     try {
 
-      const res = await axios.put("http://localhost:5000/api/profile/edit", form, {
+      const res = await API.put("/profile/edit", form, {
         withCredentials: true
       });
 
